@@ -1,0 +1,5 @@
+export const SEAT_STATUS = {
+  AVAILABLE: "AVAILABLE",
+  LOCKED: "LOCKED",
+  BOOKED: "BOOKED"
+};
