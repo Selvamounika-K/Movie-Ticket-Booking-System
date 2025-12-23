@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+
 import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import movieRoutes from "./routes/movie.routes.js";
@@ -13,32 +14,23 @@ import seatRoutes from "./routes/seat.routes.js";
 import seatLockRoutes from "./routes/seatLock.routes.js";
 
 import { errorHandler } from "./middlewares/error.middleware.js";
-import { env } from "./config/env.js";
-
 
 const app = express();
 
-const allowedOrigins = [
-	env.CLIENT_URL,
-	"http://localhost:5173",
-	"http://localhost:3000",
-].filter(Boolean);
-
+/**
+ * ✅ FIXED CORS (works with Vercel prod + preview URLs)
+ */
 app.use(
-	cors({
-		origin: (origin, callback) => {
-			if (!origin) return callback(null, true);
-			if (allowedOrigins.includes(origin)) return callback(null, true);
-			return callback(new Error("CORS policy does not allow access from the specified Origin."), false);
-		},
-		credentials: true,
-	})
+  cors({
+    origin: true,        // reflect request origin
+    credentials: true,   // allow cookies / auth headers
+  })
 );
 
 app.use(express.json());
 
+// Routes
 app.use("/api/seat-locks", seatLockRoutes);
-
 app.use("/api/auth", authRoutes);
 app.use("/api/health", healthRoutes);
 app.use("/api/movies", movieRoutes);
@@ -47,8 +39,10 @@ app.use("/api/theatres", theatreRoutes);
 app.use("/api/shows", showRoutes);
 app.use("/api/screens", screenRoutes);
 app.use("/api/seats", seatRoutes);
-
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/payments", paymentRoutes);
+
+// Error handler (must be last)
 app.use(errorHandler);
+
 export default app;
